@@ -1,139 +1,72 @@
 # Git Setup Wizard
 
-**A guided command-line setup for starting a Git repository with confidence.**
+**An interactive CLI to get a new project ready for Git and GitHub.**
 
-[![npm version](https://img.shields.io/npm/v/git-setup-wizard.svg)](https://www.npmjs.com/package/git-setup-wizard)
-[![GitHub repository](https://img.shields.io/badge/GitHub-source-blue)](https://github.com/Ashish2106B/git-setup-wizard)
+## About
 
-Git Setup Wizard helps developers prepare a new project for Git. It generates a `README.md` and `.gitignore`, lets you review the staged changes, and can create the initial commit after one confirmation.
-
-This repository is a **demo project** documenting a verified run of the published package, version **1.0.1**. It is not the package source repository.
-
-## The problem
-
-Starting a repository often means switching between setup commands, writing starter documentation, choosing ignore rules, and checking what is about to be committed. That can be easy to overlook, especially when sensitive local files are present.
-
-## The solution
-
-Run the wizard from a project directory and follow its CLI flow. It creates starter Git files, presents the staged changes for review, and asks for a single confirmation before creating the initial commit.
+Git Setup Wizard is an npm package that guides you through preparing a project for version control. It brings repository initialization, starter files, an initial commit, and optional GitHub remote setup into one workflow, with a review step before committing.
 
 ## Features
 
-- Generates a `README.md` and `.gitignore` for a project.
-- Shows staged changes so they can be reviewed before committing.
-- Uses one commit confirmation in the verified workflow.
-- Excludes common secret-file patterns, including root and nested `.env`, `secret`, `.pem`, and `.key` files.
-- Provides a quick, repeatable setup through `npx` without a global install.
-
-## Technologies
-
-| Technology | Role |
-| --- | --- |
-| Node.js | Runtime for the CLI package |
-| npm / `npx` | Package distribution and execution |
-| Git | Staging, reviewing, and committing project files |
+- Interactive prompts for the project name, project type, and setup actions.
+- Initializes Git for a new repository and sets its initial branch to `main`.
+- Generates a starter `README.md` and project-specific `.gitignore` for Node.js, Python, or Java.
+- Displays staged filenames and the staged diff for review before a commit.
+- Creates an initial commit after confirmation.
+- Optionally configures a GitHub URL as `origin` and pushes the current branch after confirmation.
+- Excludes common secret-file patterns from automatic staging: `.env*`, `*secret*`, `*.pem`, and `*.key`.
 
 ## Requirements
 
-- Node.js and npm installed.
-- Git installed and available on your `PATH`.
-- A project directory where you want to initialize Git setup.
+- Node.js 18 or newer
+- Git installed and available on your `PATH`
+- Git credentials configured locally if you choose GitHub operations
 
-## Installation and usage
+## Try It
 
-The recommended way to run the published package is with `npx`; no global installation is required:
+Run this from the project directory you want to set up:
 
 ```bash
 npx --yes git-setup-wizard@1.0.1
 ```
 
-Run the command from the project directory you want to set up. Follow the prompts presented by the CLI.
+## How It Works
 
-### CLI demonstration
+1. The wizard asks for a project name and type, then offers setup operations.
+2. If you choose Git initialization, it creates a repository on `main`. If a `.git` entry already exists, it skips initialization.
+3. It can generate a starter README and `.gitignore`; existing files with those names are left unchanged.
+4. If you choose the initial commit, it stages eligible files and displays the filenames and diff for review. Confirm to create the commit.
+5. GitHub setup is optional. Create an empty GitHub repository first; the wizard can add its URL as `origin` if no `origin` is configured. You can then choose to push the current branch and confirm that action.
 
-1. Open a terminal in a project directory.
+Each operation can be declined independently.
 
-   ```bash
-   cd path/to/your-project
-   ```
+## Example Use Case
 
-2. Run the published version of Git Setup Wizard.
+For a new Node.js project, create its directory and start the wizard:
 
-   ```bash
-   npx --yes git-setup-wizard@1.0.1
-   ```
+```bash
+mkdir my-app
+cd my-app
+npx --yes git-setup-wizard@1.0.1
+```
 
-3. Follow the wizard's prompts. It generates `README.md` and `.gitignore` as part of the setup.
-4. Review the staged changes shown by the wizard. You can also inspect them in the terminal with:
+Choose **Node.js**, accept the setup actions you want, and review the staged files and diff before confirming an initial commit. To publish it, first create an empty repository on GitHub, then use the optional remote and push steps.
 
-   ```bash
-   git status --short
-   git diff --cached
-   ```
+## Safety
 
-5. When prompted, confirm the initial commit once. The verified workflow completed the initial commit automatically after that single confirmation.
-6. Check the repository state:
+- An existing Git repository is not reinitialized.
+- Existing `README.md` and `.gitignore` files are preserved.
+- Automatic staging excludes `.env*`, `*secret*`, `*.pem`, and `*.key` filenames at the repository root and in nested directories. Sensitive-looking staged filenames also block the commit.
+- Review the displayed diff before confirming: filename rules cannot detect secrets stored in ordinary-looking files.
+- GitHub remote configuration and pushing are optional and separately confirmed. The wizard uses locally configured Git credentials and does not save them.
 
-   ```bash
-   git status --short --branch
-   git log -1 --oneline
-   ```
+## Verification
 
-The commands above show how to launch and inspect a run; they are not a captured transcript. See [Verified results](#verified-results) for the actual recorded outcome.
+The published package **1.0.1** was tested with `npx --yes git-setup-wizard@1.0.1`. The recorded run generated `README.md` and `.gitignore`, displayed staged changes for review, and created an initial commit after one confirmation. The demo repository preserves the successful initial commit `658443b` in its history.
 
-## Staged review and commit confirmation
+A separate secret-file check confirmed that root and nested `.env`, `secret`, `.pem`, and `.key` test files were absent from the committed tree; `app.txt` and `config/app-config.txt` were present.
 
-Before committing, the wizard presents the staged file changes for review. Check that the generated files and any project files intended for the first commit are appropriate. The tested flow asked for **one commit confirmation**; after confirmation, it created the initial commit automatically. Review carefully before confirming, especially when working in a directory that already contains files.
-
-## Secret-file exclusions
-
-The demo verified exclusion of root-level and nested files matching these patterns:
-
-| Pattern | Examples |
-| --- | --- |
-| `.env` | `.env`, `config/.env` |
-| `secret` | `secret`, `config/secret` |
-| `.pem` | `server.pem`, `certs/server.pem` |
-| `.key` | `server.key`, `certs/server.key` |
-
-The verification checked the committed tree with `git ls-tree -r --name-only HEAD` and confirmed that none of those files were committed. Safe files `app.txt` and `config/app-config.txt` were committed. Exclusion rules reduce accidental inclusion; always review staged changes before confirming a commit.
-
-## Verified results
-
-The following results were recorded by running the published package, version **1.0.1**:
-
-| Check | Result |
-| --- | --- |
-| Command | `npx --yes git-setup-wizard@1.0.1` |
-| Generated files | `README.md` and `.gitignore` |
-| Staged changes | Reviewed before commit |
-| Commit confirmation | One confirmation |
-| Initial commit | Created automatically; `658443b` |
-| Secret-file test | Root and nested `.env`, `secret`, `.pem`, and `.key` files were not committed |
-| Safe-file test | `app.txt` and `config/app-config.txt` were committed |
-| Tree verification | Used `git ls-tree -r --name-only HEAD` |
-| Final state | Working tree clean |
-
-These are the supplied test results for this demo; this repository does not include the package's source code.
-
-## Screenshots
-
-The [`screenshots/`](screenshots/) folder contains a capture guide. Add genuine screenshots from your own terminal run there; no screenshots or terminal output are fabricated in this repository.
-
-## Record a 1–2 minute terminal demo
-
-1. Start a screen recording and show a clean terminal window with the demo project directory visible.
-2. Run `npx --yes git-setup-wizard@1.0.1` and capture the actual prompts and generated-file steps.
-3. Pause on the staged changes and show how you review them.
-4. Show the single commit confirmation and the resulting commit.
-5. Briefly show the secret-file exclusion check with `git ls-tree -r --name-only HEAD` (use the test project, and do not display real credentials or private files).
-6. End by showing the final commit and clean working tree. Keep the recording between one and two minutes, and use only output from a genuine run.
-
-## Links
+## Related Links
 
 - [NPM package](https://www.npmjs.com/package/git-setup-wizard)
-- [Main GitHub repository](https://github.com/Ashish2106B/git-setup-wizard)
-
-## License
-
-Refer to the [main package repository](https://github.com/Ashish2106B/git-setup-wizard) for its license. This demo repository does not make a separate license claim.
+- [Source code](https://github.com/Ashish2106B/git-setup-wizard)
